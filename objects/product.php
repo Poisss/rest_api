@@ -56,6 +56,17 @@ class Product{
         } 
         return false;
     }
+    function delete(){
+        $query="DELETE FROM ".$this->table_name." 
+        WHERE id=:id";
+        $stmt=$this->conn->prepare($query);
+        $stmt->bindParam(":id",$this->id);
+        
+        if ($stmt->execute()) {
+            return true; 
+        } 
+        return false;
+    }
     function readOne(){
         $query="SELECT
         c.name as category_name, p.id, p.name,  p.description,  p.price,  p.category_id,  p.created 

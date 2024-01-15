@@ -8,13 +8,9 @@ include_once "../objects/product.php";
 
 $database=new Database();
 $db=$database->getConnection();
-
 $product=new Product($db);
 
-$json=file_get_contents('php://input');
-$data=json_decode($json);
-
-$products->id=!empty($data->id)? $data->id: die();
+$product->id=isset($_GET['id'])? $_GET['id']: die();
 
 $stmt=$product->readOne();
 
