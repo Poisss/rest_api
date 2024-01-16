@@ -30,7 +30,7 @@ class Product{
         $stmt->execute();
         return $stmt;
     }
-    function create()
+    function store()
     {
         $query = "INSERT into
         " . $this->table_name . "
@@ -56,10 +56,11 @@ class Product{
         } 
         return false;
     }
-    function delete(){
+    function destroy(){
         $query="DELETE FROM ".$this->table_name." 
         WHERE id=:id";
         $stmt=$this->conn->prepare($query);
+        $this->id=htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(":id",$this->id);
         
         if ($stmt->execute()) {
@@ -78,6 +79,7 @@ class Product{
         LIMIT 0,1";
 
         $stmt=$this->conn->prepare($query);
+        $this->id=htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(":id", $this->id);
         $stmt->execute();
 
@@ -88,6 +90,60 @@ class Product{
         $this->price=$row["price"];
         $this->category_id=$row["category_id"];
         $this->category_name=$row["category_name"];
+    }
+    function update(){
+        $query="UPDATE ".$this->table_name." 
+        SET name=:name, description=:description, price=:price, category_id=:category_id 
+        WHERE id=:id";
+
+        $stmt = $this->conn->prepare($query);
+
+        $this->id=htmlspecialchars(strip_tags($this->id));
+        $this->name=htmlspecialchars(strip_tags($this->name));
+        $this->description=htmlspecialchars(strip_tags($this->description));
+        $this->price=htmlspecialchars(strip_tags($this->price));
+        $this->category_id=htmlspecialchars(strip_tags($this->category_id));
+
+        $stmt->bindParam(":id", $this->id);
+        $stmt->bindParam(":name", $this->name);
+        $stmt->bindParam(":description", $this->description);
+        $stmt->bindParam(":price", $this->price);
+        $stmt->bindParam(":category_id", $this->category_id);
+
+        if ($stmt->execute()) {
+            return true; 
+        } 
+        return false;
+    }
+    function search($keywords,$category,$price){
+        $category=htmlspecialchars(strip_tags($category));
+        $category=$category!=""?" and (c.name = ".$category.") ":"";
+
+        $price=htmlspecialchars(strip_tags($price));
+        $price=$price!=""?" and (p.price > ".explode("-", $price)[0]." and p.price < ".explode("-", $price)[1].") ":"";
+
+        $query="SELECT
+        c.name as category_name, p.id, p.name,  p.description,  p.price,  p.category_id,  p.created 
+        FROM ".$this->table_name." p 
+            LEFT JOIN 
+            categories c 
+            ON p.category_id=c.id 
+        WHERE (p.name LIKE ? or c.name LIKE ? or p.description LIKE ?) ".
+        $category.$price."
+        ORDER BY 
+        p.created DESC";
+
+        $stmt=$this->conn->prepare($query);
+
+        $keywords=htmlspecialchars(strip_tags($keywords));
+        $keywords="%".$keywords."%";
+
+        $stmt->bindParam(1, $keywords);
+        $stmt->bindParam(2, $keywords);
+        $stmt->bindParam(3, $keywords);
+
+        $stmt->execute();
+        return $stmt;
     }
 }
 ?>

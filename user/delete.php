@@ -4,15 +4,15 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: DELETE");
 
 include_once "../config/database.php";
-include_once "../objects/category.php";
+include_once "../objects/user.php";
 
 $database=new Database();
 $db=$database->getConnection();
-$category=new Category($db);
+$user=new User($db);
 
-$category->id=isset($_GET['id'])? $_GET['id']: die();
+$user->id=isset($_GET['id'])? $_GET['id']: die();
 
-if($category->destroy()){
+if($user->destroy()){
     http_response_code(201);
     echo json_encode(array("message"=>"Категория удалена"),JSON_UNESCAPED_UNICODE);
 }

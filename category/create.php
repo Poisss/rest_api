@@ -19,7 +19,7 @@ if(!empty($data->name) && !empty($data->description)){
     $category->description=$data->description;
     $category->created=date('Y-m-d H:i:s');
     
-    if($category->create()){
+    if($category->store()){
         http_response_code(201);
         echo json_encode(array("message"=>"Категория создана"),JSON_UNESCAPED_UNICODE);
     }

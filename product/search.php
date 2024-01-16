@@ -11,9 +11,11 @@ $db=$database->getConnection();
 
 $product=new Product($db);
 
-$product->id=isset($_GET['id'])? $_GET['id']: die();
+$keywords=isset($_GET['keywords'])? $_GET['keywords']: "";
+$category=isset($_GET['category'])? $_GET['category']: "";
+$price=isset($_GET['price'])? $_GET['price']: "";
 
-$stmt=$product->read();
+$stmt=$product->search($keywords,$category,$price);
 $num=$stmt->rowCount();
 
 if($num>0){

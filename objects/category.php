@@ -24,7 +24,7 @@ class Category{
         $stmt->execute();
         return $stmt;
     }
-    function create()
+    function store()
     {
         $query = "INSERT into
         " . $this->table_name . "
@@ -46,10 +46,11 @@ class Category{
         } 
         return false;
     }
-    function delete(){
+    function destroy(){
         $query="DELETE FROM ".$this->table_name." 
         WHERE id=:id";
         $stmt=$this->conn->prepare($query);
+        $this->id=htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(":id",$this->id);
         
         if ($stmt->execute()) {
@@ -65,6 +66,7 @@ class Category{
         LIMIT 0,1";
 
         $stmt=$this->conn->prepare($query);
+        $this->id=htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(":id", $this->id);
         $stmt->execute();
 
@@ -72,6 +74,26 @@ class Category{
 
         $this->name=$row["name"];
         $this->description=$row["description"];
+    }
+    function update(){
+        $query="UPDATE ".$this->table_name." 
+        SET name=:name, description=:description
+        WHERE id=:id";
+
+        $stmt = $this->conn->prepare($query);
+
+        $this->id=htmlspecialchars(strip_tags($this->id));
+        $this->name=htmlspecialchars(strip_tags($this->name));
+        $this->description=htmlspecialchars(strip_tags($this->description));
+
+        $stmt->bindParam(":id", $this->id);
+        $stmt->bindParam(":name", $this->name);
+        $stmt->bindParam(":description", $this->description);
+
+        if ($stmt->execute()) {
+            return true; 
+        } 
+        return false;
     }
 }
 ?>
