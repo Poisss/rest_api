@@ -1,0 +1,30 @@
+body{
+    padding-top: 45px;
+}
+#logout{
+    display: none;
+}
+#update_account{
+    display: none;
+}
+.m-t-15px{
+    margin-top: 15px;
+}
+.m-b-15px{
+    margin-bottom: 15px;
+}
+.w-10-pt{
+    width: 10%;
+}
+.w-15-pt{
+    width: 15%;
+}
+.w-25-pt{
+    width: 25%;
+}
+.w-30-pt{
+    width: 30%;
+}
+.text-align-center{
+    text-align: center;
+}

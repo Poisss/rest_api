@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Приложение к API</title>
+        <link rel="stylesheet" href="app/assets/css/bootstrap.css">
+        <link rel="stylesheet" href="app/assets/css/style.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+            <a href="#" class="navbar-brand ">
+                Навигация
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link" href="javascript:void(0);" id="home">
+                        Домашняя страница
+                    </a>
+                    <a class="nav-item nav-link" href="javascript:void(0);" id="read_products">
+                        Товары
+                    </a>
+                    <a class="nav-item nav-link" href="javascript:void(0);" id="update_account">
+                        Редактировать
+                    </a>
+                    <a class="nav-item nav-link" href="javascript:void(0);" id="logout">
+                        Выход
+                    </a>
+                    <a class="nav-item nav-link" href="javascript:void(0);" id="login">
+                        Вход
+                    </a>
+                    <a class="nav-item nav-link" href="javascript:void(0);" id="sign-up">
+                        Регистрация
+                    </a>    
+                </div>
+            </div>
+        </nav>
+        <main class="container">
+            <div class="row">
+                <div class="col">
+                    <div id="response">
+
+                    </div>
+                    <div id="app">
+                            
+                
+
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script src="app/assets/js/jquery-3.4.1.js"></script>
+        <script src="app/assets/js/bootstrap.js"></script>
+        <script src="app/assets/js/app.js"></script>
+        <script src="product/read_product.js"></script>
+        <script src="product/create_product.js"></script>
+        <script src="product/read_one_product.js"></script>
+        <script src="product/update_product.js"></script>
+        <script src="product/delete_product.js"></script>
+    </body>
+</html>
