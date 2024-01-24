@@ -4,18 +4,36 @@ jQuery(($)=>{
         let obj={
             id:id
         };
-        $.ajax({
-            url:"rest-api/product/delete.php",
-            type: "POST",
-            dataType: "json",
-            data: JSON.stringify(obj),
-            success: (result)=>{
-                showProducts();
+        bootbox.confirm({
+            message:'<h4>Вы точно желаете удалить?</h4>',
+            buttons:{
+                confirm:{
+                    label:"Да",
+                    className:"btn-danger"
+                },
+                cancel:{
+                    label:"Нет",
+                    className:"btn-primary"
+                }
             },
-            error:(xhr, resp, text)=>{
-                console.log(xhr, resp, text);
+            callback:result=>{
+                if(result==true){
+                    $.ajax({
+                        url:"rest-api/product/delete.php",
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify(obj),
+                        success: (result)=>{
+                            showProducts();
+                        },
+                        error:(xhr, resp, text)=>{
+                            console.log(xhr, resp, text);
+                        }
+                    })
+                }
             }
-        })
+        });
+        
         return false;
     });
 });
