@@ -1,5 +1,6 @@
 jQuery(($)=>{
     $(document).on("click", ".update-one-product-button",(e)=>{
+        $('#response').html("");
         const id = $(e.target).attr("data-id");
         $.getJSON("rest-api/product/read_one.php?id="+id, (data1)=>{
             $.getJSON("rest-api/category/read.php", (data2)=>{
@@ -49,6 +50,7 @@ jQuery(($)=>{
         });
     });
     $(document).on("submit", "#update-product-form", function(){
+        $('#response').html("");
         let form_data = JSON.stringify($(this).serializeObject());
         console.log(form_data);
         $.ajax({
@@ -57,10 +59,12 @@ jQuery(($)=>{
             dataType: "json",
             data: form_data,
             success: (result)=>{
-                showProducts();
+                $('#response').html("<div class='alert alert-primary'><h2>Данные обновлены</h2></div>");
+                showProducts('','','',null,'');
             },
             error:(xhr, resp, text)=>{
                 console.log(xhr, resp, text);
+                $('#response').html("<div class='alert alert-danger'><h2>Не удалось обновить данные</h2></div>");
             }
         })
         return false;

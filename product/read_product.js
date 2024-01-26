@@ -1,19 +1,32 @@
 jQuery(($)=>{
-    $('#response').html("");
     $(document).on("click","#read_products",()=>{
-        showProducts(1,'','','','');
+        $('#response').html("");
+        showProducts('','','',null,'');
     });
     $(document).on("click",".read-product-button",()=>{
-        showProducts(1,'','','','');
+        $('#response').html("");
+        showProducts('','','',null,'');
     });
 });
 
-function showProducts(page,keywords,price_min,price_max,category_id){
-    let price='';
-    if(price_min != '' && price_max != ''){
-        price=price_min+"-"+price_max;
+function showProducts(keywords,price_min,price_max,category_id,url){
+    let url_json="rest-api/product/search_paging.php";
+    let attr='?page=1';
+    if(url != ''){
+        url_json=url;
+        attr='';
+    }else{
+        if(keywords != ''){
+            attr+="&keywords="+keywords;
+        }
+        if(price_min != '' && price_max != ''){
+            attr+="&price="+price_min+"-"+price_max;
+        }
+        if(category_id != null){
+            attr+="&category="+category_id;
+        }
     }
-    $.getJSON("rest-api/product/search_paging.php?page="+page+"&keywords="+keywords+"&category="+category_id+"&price="+price,(data)=>{
+    $.getJSON(url_json+attr,(data)=>{
         $.getJSON("rest-api/category/read.php", (data2)=>{
             let category_option = `<select name="category_id" class="form-control">
             <option value="" disabled selected>Выберите категорию</option>`
@@ -39,8 +52,8 @@ function showProducts(page,keywords,price_min,price_max,category_id){
                                             <input type="text" value="`+ keywords +`" name="keywords" class="form-control product-search-keywords margin_l_r" placeholder="Поиск товаров">
                                             <div>
                                                 <p>Цена</p>
-                                                <input type="number" value="`+ price_min +`" placeholder="от">
-                                                <input type="number" value="`+ price_max +`" placeholder="до">
+                                                <input type="number" value="`+ price_min +`" name="price_min" placeholder="от">
+                                                <input type="number" value="`+ price_max +`" name="price_max" placeholder="до">
                                             </div>
                                             `+ category_option +`
                                             <button type="submit" class="btn btn-secondary">Найти</button>
@@ -78,7 +91,22 @@ function showProducts(page,keywords,price_min,price_max,category_id){
                             </tr>
                 `;
             });
-            read_products_html+=`</table>`;
+            read_products_html+=`</table><div class="paging">`;
+            let num=1;
+            $.each(data.paging.pages, (key , val)=>{
+                if(val.current_page=="yes"){
+                    read_products_html+=`<div class="paging_item paging_item_active" 
+                    data-url="`+val.url+`" data-keywords="`+keywords+`" data-price-min="`+price_min+`" 
+                    data-price-max="`+price_max+`" data-category-id="`+category_id+`">`+num+`</div>`;
+                }else{
+                    read_products_html+=`<div class="paging_item paging_item_not-active" 
+                    data-url="`+val.url+`" data-keywords="`+keywords+`" data-price-min="`+price_min+`" 
+                    data-price-max="`+price_max+`" data-category-id="`+category_id+`">`+num+`</div>`;
+                }
+                
+                num++;
+            });
+            read_products_html+=`<div>`;
 
             $('#app').html(read_products_html);
         });

@@ -1,5 +1,6 @@
 jQuery(($)=>{
     $(document).on("click", ".delete-one-product-button",(e)=>{
+        $('#response').html("");
         const id = $(e.target).attr("data-id");
         let obj={
             id:id
@@ -24,10 +25,12 @@ jQuery(($)=>{
                         dataType: "json",
                         data: JSON.stringify(obj),
                         success: (result)=>{
-                            showProducts();
+                            $('#response').html("<div class='alert alert-primary'><h2>Продукт удален</h2></div>");
+                            showProducts('','','',null,'');
                         },
                         error:(xhr, resp, text)=>{
                             console.log(xhr, resp, text);
+                            $('#response').html("<div class='alert alert-danger'><h2>Не удалось удалить продукт</h2></div>");
                         }
                     })
                 }

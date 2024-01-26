@@ -1,5 +1,6 @@
 jQuery(($)=>{
     $(document).on("click",".read-one-product-button",(e)=>{
+        $('#response').html("");
         const id = $(e.target).attr("data-id");
         $.getJSON("rest-api/product/read_one.php?id="+id,(data)=>{
             let product_one =`

@@ -1,5 +1,6 @@
 jQuery(($)=>{
     $(document).on("click", ".create-product-button",()=>{
+        $('#response').html("");
         $.getJSON("rest-api/category/read.php", (data)=>{
             let category_option = `<select name="category_id" class="form-control">`
             $.each(data.records, (key , val)=>{
@@ -40,6 +41,7 @@ jQuery(($)=>{
         });
     });
     $(document).on("submit", "#create-product-form", function(){
+        $('#response').html("");
         let form_data = JSON.stringify($(this).serializeObject());
         $.ajax({
             url:"rest-api/product/create.php",
@@ -47,12 +49,14 @@ jQuery(($)=>{
             dataType: "json",
             data: form_data,
             success: (result)=>{
-                showProducts();
+                $('#response').html("<div class='alert alert-primary'><h2>Продукт создан</h2></div>");
+                showProducts('','','',null,'');
             },
             error:(xhr, resp, text)=>{
                 console.log(xhr, resp, text);
+                $('#response').html("<div class='alert alert-danger'><h2>Не удалось создать продукт</h2></div>");
             }
         })
         return false;
-    })
+    });
 });
