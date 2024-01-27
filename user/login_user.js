@@ -4,7 +4,7 @@ $(document).on("click", "#login", () => {
   });
   
   function showLoginPage() {
-    setCookie("jwt", "", 1);
+    
     let html = `
           <h1>Авторизация</h1>
           <form action="#" id="login-form" class="m-t-15px">
@@ -30,9 +30,12 @@ $(document).on("submit", "#login-form", function(){
         dataType: "json",
         data: form_data,
         success: (result)=>{
+            setCookie("id", result.id, 1);
+            setCookie("jwt", result.jwt, 1);
+            showLogInMenu();
             $('#response').html("<div class='alert alert-primary'><h2>Вы успешно вошли</h2></div>");
             $('#app').html("");
-            showLogInMenu();
+            
         },
         error:(xhr, resp, text)=>{
             console.log(xhr, resp, text);
@@ -42,21 +45,9 @@ $(document).on("submit", "#login-form", function(){
     })
     return false;
 });
-function showLogOutMenu(){
-    $("#login, #sign_up").show();
-    $("#logout").show().hide();
-}
-function showLogInMenu(){
-    $("#login, #sign_up").hide();
-    $("#logout").show().show();
-}
-function setCookie(cname,cvalue,exdays){
-    var d=new Date();
-    d.setTime(d.setTime()+(exdays*60*60*24));
-    var expires="expires="+d.toUTCString();
-    document.cookie=cname+"="+cvalue+";"+expires+";path=/";
-}
 $(document).on("click", "#logout", () => {
+    deleteCookie('id');
+    deleteCookie('jwt');
     showLoginPage();
     $('#response').html("<div class='alert alert-primary'><h2>Вы успешно вышли из системы</h2></div>");
 })

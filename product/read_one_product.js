@@ -24,12 +24,6 @@ jQuery(($)=>{
                                     <td>Категория</td>
                                     <td>`+data.category_name+`</td>
                                 </tr>
-                                <tr>
-                                    <td></td>
-                                    <td>
-                                        <button type="submit" class="btn btn-primary">Создать товар</button>
-                                    </td>
-                                </tr>
                             </table>`;
             $("#app").html(product_one);                
         });
