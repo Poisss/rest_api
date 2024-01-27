@@ -38,19 +38,43 @@ function showProducts(keywords,price_min,price_max,category_id,url){
                 } 
             })
             category_option += `</select>`;
-            let create_product=`<div> </div>`;
+            let create_product=`<div>`;
+            let size_table=`<th class="w-25-pt">
+                                Название
+                            </th>
+                            <th class="w-15-pt">
+                                Цена
+                            </th>
+                            <th class="w-15-pt">
+                                Категория
+                            </th>
+                            <th class="w-10-pt text-align-center">
+                                Действие
+                            </th>`;
             if(authCheck()){
                 create_product=`
+                            <div class="search">
                                 <div id="create-product" class="btn btn-primary create-product-button center">
                                     Создание товара
                                 </div>
                 `;
+                size_table=`<th class="w-15-pt">
+                                Название
+                            </th>
+                            <th class="w-10-pt">
+                                Цена
+                            </th>
+                            <th class="w-15-pt">
+                                Категория
+                            </th>
+                            <th class="w-25-pt text-align-center">
+                                Действие
+                            </th>`;
             }
             let read_products_html=`
                             <h1 id="page-title">
                                 Все товары
                             </h1>
-                            <div class="search">
                                 `+create_product+`
                                 <div class="">
                                     <form action="#" id="search-product-form" method="post">
@@ -69,18 +93,7 @@ function showProducts(keywords,price_min,price_max,category_id,url){
                             </div> 
                             <table class="table table-bordered table-hover margin_t_b">
                                 <tr>
-                                    <th class="w-15-pt">
-                                        Название
-                                    </th>
-                                    <th class="w-10-pt">
-                                        Цена
-                                    </th>
-                                    <th class="w-15-pt">
-                                        Категория
-                                    </th>
-                                    <th class="w-25-pt text-align-center">
-                                        Действие
-                                    </th>
+                                   `+size_table+`
                                 </tr>
             `;
             $.each(data.records,(key,val)=>{
