@@ -1,66 +1,63 @@
 jQuery(($)=>{
-    $(document).on("click", ".update-one-product-button",(e)=>{
+    $(document).on("click", ".update-one-post-button",(e)=>{
         $('#response').html("");
         const id = $(e.target).attr("data-id");
-        $.getJSON("rest-api/product/read_one.php?id="+id, (data1)=>{
-            $.getJSON("rest-api/category/read.php", (data2)=>{
-                let category_option = `<select name="category_id" class="form-control">`
+        $.getJSON("rest-api/post/read_one.php?id="+id, (data1)=>{
+            $.getJSON("rest-api/topic/read.php", (data2)=>{
+                let topic_option = `<select name="topic_id" class="form-control">`
                 $.each(data2.records, (key , val)=>{
-                    if(data1.category_id==val.id){
-                        category_option += `<option value="`+val.id+`" selected>` + val.name + `</option>`;
+                    if(data1.topic_id==val.id){
+                        topic_option += `<option value="`+val.id+`" selected>` + val.name + `</option>`;
                     }else{
-                        category_option += `<option value="`+val.id+`">` + val.name + `</option>`;
+                        topic_option += `<option value="`+val.id+`">` + val.name + `</option>`;
                     }  
                 })
-                category_option += `</select>`;
+                topic_option += `</select>`;
                 
-                let create_product = `
-                    <div id="read-products" class="btn btn-primary read-product-button">
-                    Товары
+                let create_post = `
+                    <div id="read-posts" class="btn btn-primary read-post-button">
+                    Посты
                     </div>
-                    <form action="#" id="update-product-form" method="post" border="0">
+                    <form action="#" id="update-post-form" method="post" border="0">
                         <input type="hidden" name="id" value="`+data1.id+`">
+                        <input type="hidden" name="user_id" value="`+data1.user_id+`">
                         <table class="table table-bordered table-hover">
                             <tr>
                                 <td>Название</td>
-                                <td><input type="text" name="name" class="form-control" value="`+data1.name+`" required></td>
+                                <td><input type="text" name="title" class="form-control" value="`+data1.title+`" required></td>
                             </tr>
                             <tr>
-                                <td>Цена</td>
-                                <td><input type="number" name="price" class="form-control" value="`+data1.price+`" required></td>
+                                <td>Текст</td>
+                                <td><textarea  name="text" class="form-control" required>`+data1.text+`</textarea></td>
                             </tr>
                             <tr>
-                                <td>Описание</td>
-                                <td><textarea  name="description" class="form-control" required>`+data1.description+`</textarea></td>
-                            </tr>
-                            <tr>
-                                <td>Категория</td>
-                                <td>`+ category_option +`</td>
+                                <td>Тема</td>
+                                <td>`+ topic_option +`</td>
                             </tr>
                             <tr>
                                 <td></td>
                                 <td>
-                                    <button type="submit" class="btn btn-primary">Изменить товар</button>
+                                    <button type="submit" class="btn btn-primary">Изменить пост</button>
                                 </td>
                             </tr>
                         </table>
                     </form>`;
-                $("#app").html(create_product);
+                $("#app").html(create_post);
             });
         });
     });
-    $(document).on("submit", "#update-product-form", function(){
+    $(document).on("submit", "#update-post-form", function(){
         $('#response').html("");
         let form_data = JSON.stringify($(this).serializeObject());
         console.log(form_data);
         $.ajax({
-            url:"rest-api/product/update.php",
+            url:"rest-api/post/update.php",
             type: "POST",
             dataType: "json",
             data: form_data,
             success: (result)=>{
                 $('#response').html("<div class='alert alert-primary'><h2>Данные обновлены</h2></div>");
-                showProducts('','','',null,'');
+                showPost('',null,'');
             },
             error:(xhr, resp, text)=>{
                 console.log(xhr, resp, text);

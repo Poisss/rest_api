@@ -45,8 +45,3 @@ function authCheck(){
         return false;
     }
 }
-if(authCheck()){
-    showLogInMenu()
-}else{
-    showLogOutMenu()
-}

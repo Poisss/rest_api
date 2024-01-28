@@ -72,8 +72,10 @@ class Topic{
 
         $row=$stmt->fetch(PDO::FETCH_ASSOC);
 
-        $this->name=$row["name"];
-        $this->description=$row["description"];
+        if(!empty($row)){
+            $this->name=$row["name"];
+            $this->description=$row["description"];
+        }
     }
     function update(){
         $query="UPDATE ".$this->table_name." 

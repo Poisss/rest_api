@@ -1,17 +1,23 @@
 <?php
 class Utilities{
-    public function getPaging($keywords, $category, $price, $page, $total_rows, $records_per_page, $page_url): array {
+    public function getPaging($attr_arr, $page, $total_rows, $records_per_page, $page_url): array {
         $paging_arr = [];
         $paging_attr = '';
 
-        if(!empty($keywords)){
-            $paging_attr .= '&keywords=' . $keywords; 
+        if(!empty($attr_arr['keywords'])){
+            $paging_attr .= '&keywords=' . $attr_arr['keywords']; 
         }
-        if(!empty($category)){
-            $paging_attr .= '&category=' . $category; 
+        if(!empty($attr_arr['category'])){
+            $paging_attr .= '&category=' . $attr_arr['category']; 
         }
-        if(!empty($price)){
-            $paging_attr .= '&price=' . $price; 
+        if(!empty($attr_arr['price'])){
+            $paging_attr .= '&price=' . $attr_arr['price']; 
+        }
+        if(!empty($attr_arr['topic'])){
+            $paging_attr .= '&topic=' . $attr_arr['topic']; 
+        }
+        if(!empty($attr_arr['user_id'])){
+            $paging_attr .= '&user_id=' . $attr_arr['user_id']; 
         }
         
         $paging_arr['first'] = $page > 1 ? $page_url . 'page=1' . $paging_attr : '';

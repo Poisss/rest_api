@@ -1,5 +1,5 @@
 jQuery(($)=>{
-    $(document).on("click", ".delete-one-product-button",(e)=>{
+    $(document).on("click", ".delete-one-post-button",(e)=>{
         $('#response').html("");
         const id = $(e.target).attr("data-id");
         let obj={
@@ -20,17 +20,17 @@ jQuery(($)=>{
             callback:result=>{
                 if(result==true){
                     $.ajax({
-                        url:"rest-api/product/delete.php",
+                        url:"rest-api/post/delete.php",
                         type: "POST",
                         dataType: "json",
                         data: JSON.stringify(obj),
                         success: (result)=>{
-                            $('#response').html("<div class='alert alert-primary'><h2>Продукт удален</h2></div>");
-                            showProducts('','','',null,'');
+                            $('#response').html("<div class='alert alert-primary'><h2>Пост удален</h2></div>");
+                            showPost('',null,'');
                         },
                         error:(xhr, resp, text)=>{
                             console.log(xhr, resp, text);
-                            $('#response').html("<div class='alert alert-danger'><h2>Не удалось удалить продукт</h2></div>");
+                            $('#response').html("<div class='alert alert-danger'><h2>Не удалось удалить пост</h2></div>");
                         }
                     })
                 }

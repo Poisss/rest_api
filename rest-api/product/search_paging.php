@@ -18,8 +18,13 @@ $product = new Product($db);
 $keywords1=isset($_GET['keywords'])? $_GET['keywords']: "";
 $category1=isset($_GET['category'])? $_GET['category']: "";
 $price1=isset($_GET['price'])? $_GET['price']: "";
+$attr_arr=array(
+        "keywords"=>$keywords1,
+        "category"=>$category1,
+        "price"=>$price1,
+    );
 
-$stmt = $product->searchPaging($keywords1,$category1,$price1,$from_record_num, $records_per_page);
+$stmt = $product->searchPaging($attr_arr,$from_record_num, $records_per_page);
 $num = $stmt->rowCount();
 
 if ($num > 0) {
@@ -40,9 +45,9 @@ if ($num > 0) {
        array_push($products_arr["records"], $product_item);
     }
 
-    $total_rows=$product->count($keywords1,$category1,$price1);
+    $total_rows=$product->count($attr_arr);
     $page_url = "{$home_url}product/search_paging.php?";
-    $paging = $utilities->getPaging($keywords1,$category1,$price1,$page, $total_rows, $records_per_page, $page_url);
+    $paging = $utilities->getPaging($attr_arr,$page, $total_rows, $records_per_page, $page_url);
     $products_arr["paging"] = $paging;
 
     echo json_encode($products_arr);

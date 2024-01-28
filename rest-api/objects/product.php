@@ -85,11 +85,13 @@ class Product{
 
         $row=$stmt->fetch(PDO::FETCH_ASSOC);
 
-        $this->name=$row["name"];
-        $this->description=$row["description"];
-        $this->price=$row["price"];
-        $this->category_id=$row["category_id"];
-        $this->category_name=$row["category_name"];
+        if(!empty($row)){
+            $this->name=$row["name"];
+            $this->description=$row["description"];
+            $this->price=$row["price"];
+            $this->category_id=$row["category_id"];
+            $this->category_name=$row["category_name"];
+        }    
     }
     function update(){
         $query="UPDATE ".$this->table_name." 
@@ -169,12 +171,12 @@ class Product{
         $stmt->execute();
         return $stmt;
     }
-    function searchPaging($keywords,$category,$price,$from_record_num,$records_per_page){
-        $category=htmlspecialchars(strip_tags($category));
-        $category=$category!=""?" and (c.id = ".$category.") ":"";
+    function searchPaging($attr_arr,$from_record_num,$records_per_page){
+        $attr_arr['category']=htmlspecialchars(strip_tags($attr_arr['category']));
+        $attr_arr['category']=$attr_arr['category']!=""?" and (c.id = ".$attr_arr['category'].") ":"";
 
-        $price=htmlspecialchars(strip_tags($price));
-        $price=$price!=""?" and (p.price > ".explode("-", $price)[0]." and p.price < ".explode("-", $price)[1].") ":"";
+        $attr_arr['price']=htmlspecialchars(strip_tags($attr_arr['price']));
+        $attr_arr['price']=$attr_arr['price']!=""?" and (p.price > ".explode("-", $attr_arr['price'])[0]." and p.price < ".explode("-", $attr_arr['price'])[1].") ":"";
 
         $query="SELECT 
         c.name as category_name, p.id, p.name, p.description, p.price, p.category_id, p.created
@@ -183,7 +185,7 @@ class Product{
         categories c 
         ON p.category_id = c.id
         WHERE (p.name LIKE ? or c.name LIKE ? or p.description LIKE ?) ".
-        $category.$price."
+        $attr_arr['category'].$attr_arr['price']."
         ORDER BY
         p.created DESC 
         LIMIT ?, ?";
@@ -192,24 +194,24 @@ class Product{
 
         $from_record_num=htmlspecialchars(strip_tags($from_record_num));
         $records_per_page=htmlspecialchars(strip_tags($records_per_page));
-        $keywords=htmlspecialchars(strip_tags($keywords));
-        $keywords="%".$keywords."%";
+        $attr_arr['keywords']=htmlspecialchars(strip_tags($attr_arr['keywords']));
+        $attr_arr['keywords']="%".$attr_arr['keywords']."%";
 
-        $stmt->bindParam(1, $keywords);
-        $stmt->bindParam(2, $keywords);
-        $stmt->bindParam(3, $keywords);
+        $stmt->bindParam(1, $attr_arr['keywords']);
+        $stmt->bindParam(2, $attr_arr['keywords']);
+        $stmt->bindParam(3, $attr_arr['keywords']);
         $stmt->bindParam(4, $from_record_num, PDO::PARAM_INT);
         $stmt->bindParam(5, $records_per_page, PDO::PARAM_INT);
 
         $stmt->execute();
         return $stmt;
     }
-    function count($keywords,$category,$price){
-        $category=htmlspecialchars(strip_tags($category));
-        $category=$category!=""?" and (c.id = ".$category.") ":"";
+    function count($attr_arr){
+        $attr_arr['category']=htmlspecialchars(strip_tags($attr_arr['category']));
+        $attr_arr['category']=$attr_arr['category']!=""?" and (c.id = ".$attr_arr['category'].") ":"";
 
-        $price=htmlspecialchars(strip_tags($price));
-        $price=$price!=""?" and (p.price > ".explode("-", $price)[0]." and p.price < ".explode("-", $price)[1].") ":"";
+        $attr_arr['price']=htmlspecialchars(strip_tags($attr_arr['price']));
+        $attr_arr['price']=$attr_arr['price']!=""?" and (p.price > ".explode("-", $attr_arr['price'])[0]." and p.price < ".explode("-", $attr_arr['price'])[1].") ":"";
 
         $query="SELECT 
         COUNT(*) as total_rows 
@@ -218,16 +220,16 @@ class Product{
         categories c 
         ON p.category_id = c.id
         WHERE (p.name LIKE ? or c.name LIKE ? or p.description LIKE ?) ".
-        $category.$price;
+        $attr_arr['category'].$attr_arr['price'];
 
         $stmt=$this->conn->prepare($query);
 
-        $keywords=htmlspecialchars(strip_tags($keywords));
-        $keywords="%".$keywords."%";
+        $attr_arr['keywords']=htmlspecialchars(strip_tags($attr_arr['keywords']));
+        $attr_arr['keywords']="%".$attr_arr['keywords']."%";
 
-        $stmt->bindParam(1, $keywords);
-        $stmt->bindParam(2, $keywords);
-        $stmt->bindParam(3, $keywords);
+        $stmt->bindParam(1, $attr_arr['keywords']);
+        $stmt->bindParam(2, $attr_arr['keywords']);
+        $stmt->bindParam(3, $attr_arr['keywords']);
 
         $stmt->execute();
 

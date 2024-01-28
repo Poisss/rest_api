@@ -85,11 +85,12 @@ class User{
 
         $row=$stmt->fetch(PDO::FETCH_ASSOC);
 
-        $this->firstname=$row["firstname"];
-        $this->lastname=$row["lastname"];
-        $this->patronymic=$row["patronymic"];
-        $this->email=$row["email"];
-        
+        if(!empty($row)){
+            $this->firstname=$row["firstname"];
+            $this->lastname=$row["lastname"];
+            $this->patronymic=$row["patronymic"];
+            $this->email=$row["email"];
+        }
     }
     function update(){
         $query="UPDATE ".$this->table_name." 

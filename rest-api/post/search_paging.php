@@ -6,49 +6,55 @@ header("Content-Type: application/json");
 
 include_once "../config/database.php";
 include_once "../config/core.php";
-include_once "../objects/product.php";
+include_once "../objects/post.php";
 include_once "../shared/utilities.php";
 
 $utilities = new Utilities();
 
 $database = new Database();
 $db =$database->getConnection();
-$product = new Product($db);
+$post = new Post($db);
 
 $keywords1=isset($_GET['keywords'])? $_GET['keywords']: "";
-$category1=isset($_GET['category'])? $_GET['category']: "";
-$price1=isset($_GET['price'])? $_GET['price']: "";
-
-$stmt = $product->searchPaging($keywords1,$category1,$price1,$from_record_num, $records_per_page);
+$topic1=isset($_GET['topic'])? $_GET['topic']: "";
+$user_id1=isset($_GET['user_id'])? $_GET['user_id']: "";
+$attr_arr=array(
+        "keywords"=>$keywords1,
+        "topic"=>$topic1,
+        "user_id"=>$user_id1,
+    );
+$stmt = $post->searchPaging($attr_arr,$from_record_num, $records_per_page);
 $num = $stmt->rowCount();
 
 if ($num > 0) {
-    $products_arr = array();
-    $products_arr["records"] = array();
-    $products_arr["paging"] = array();
+    $post_arr = array();
+    $post_arr["records"] = array();
+    $post_arr["paging"] = array();
 
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         extract($row);
-        $product_item = array(
+        $post_item = array(
             "id" => $id,
-            "name" => $name,
-            "description" => $description,
-            "price" => $price,
-            "category_id" => $category_id,
-            "category_name" => $category_name,
+            "title" => $title,
+            "text" => $text,
+            "topic_id" => $topic_id,
+            "topic_name" => $topic_name,
+            "user_id" => $user_id,
+            "user_firstname" => $user_firstname,
+            "user_lastname" => $user_lastname,
         );
-       array_push($products_arr["records"], $product_item);
+       array_push($post_arr["records"], $post_item);
     }
 
-    $total_rows=$product->count($keywords1,$category1,$price1);
-    $page_url = "{$home_url}product/search_paging.php?";
-    $paging = $utilities->getPaging($keywords1,$category1,$price1,$page, $total_rows, $records_per_page, $page_url);
-    $products_arr["paging"] = $paging;
+    $total_rows=$post->count($attr_arr);
+    $page_url = "{$home_url}post/search_paging.php?";
+    $paging = $utilities->getPaging($attr_arr,$page, $total_rows, $records_per_page, $page_url);
+    $post_arr["paging"] = $paging;
 
-    echo json_encode($products_arr);
+    echo json_encode($post_arr);
     http_response_code(200);
 }else{
     http_response_code(404);
-    echo json_encode(array("message" => "Товары не найдены"), JSON_UNESCAPED_UNICODE);
+    echo json_encode(array("message" => "Посты не найдены"), JSON_UNESCAPED_UNICODE);
 
 }

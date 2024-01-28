@@ -4,11 +4,13 @@ class Post{
     private $table_name="posts";
 
     public $id;
-    public $name;
-    public $description;
-    public $price;
-    public $category_id;
-    public $category_name;
+    public $title;
+    public $text;
+    public $user_id;
+    public $user_firstname;
+    public $user_lastname;
+    public $topic_id;
+    public $topic_name;
     public $created;
     
     public function __construct($db)
@@ -20,20 +22,20 @@ class Post{
         $query = "INSERT into
         " . $this->table_name . "
         SET
-        name=:name, description=:description, price=:price, category_id=:category_id, created=:created
+        title=:title, text=:text, user_id=:user_id, topic_id=:topic_id, created=:created
         ";
         
         $stmt = $this->conn->prepare($query);
 
-        $this->name=htmlspecialchars(strip_tags($this->name));
-        $this->description=htmlspecialchars(strip_tags($this->description));
-        $this->price=htmlspecialchars(strip_tags($this->price));
-        $this->category_id=htmlspecialchars(strip_tags($this->category_id));
+        $this->title=htmlspecialchars(strip_tags($this->title));
+        $this->text=htmlspecialchars(strip_tags($this->text));
+        $this->user_id=htmlspecialchars(strip_tags($this->user_id));
+        $this->topic_id=htmlspecialchars(strip_tags($this->topic_id));
 
-        $stmt->bindParam(":name", $this->name);
-        $stmt->bindParam(":description", $this->description);
-        $stmt->bindParam(":price", $this->price);
-        $stmt->bindParam(":category_id", $this->category_id);
+        $stmt->bindParam(":title", $this->title);
+        $stmt->bindParam(":text", $this->text);
+        $stmt->bindParam(":user_id", $this->user_id);
+        $stmt->bindParam(":topic_id", $this->topic_id);
         $stmt->bindParam(":created", $this->created);
         
         if ($stmt->execute()) {
@@ -55,11 +57,15 @@ class Post{
     }
     function readOne(){
         $query="SELECT
-        c.name as category_name, p.id, p.name,  p.description,  p.price,  p.category_id,  p.created 
+        t.name as topic_name, u.firstname as user_firstname, u.lastname as user_lastname,
+        p.id, p.title,  p.text,  p.user_id,  p.topic_id,  p.created 
         FROM ".$this->table_name." p 
             LEFT JOIN 
-            categories c 
-            ON p.category_id=c.id
+            topics t 
+            ON p.topic_id=t.id
+            LEFT JOIN 
+            users u 
+            ON p.user_id=u.id
         WHERE p.id=:id 
         LIMIT 0,1";
 
@@ -70,51 +76,59 @@ class Post{
 
         $row=$stmt->fetch(PDO::FETCH_ASSOC);
 
-        $this->name=$row["name"];
-        $this->description=$row["description"];
-        $this->price=$row["price"];
-        $this->category_id=$row["category_id"];
-        $this->category_name=$row["category_name"];
+        if(!empty($row)){
+            $this->title=$row["title"];
+            $this->text=$row["text"];
+            $this->topic_id=$row["topic_id"];
+            $this->topic_name=$row["topic_name"];
+            $this->user_id=$row["user_id"];
+            $this->user_firstname=$row["user_firstname"];
+            $this->user_lastname=$row["user_lastname"];
+        }
     }
     function update(){
         $query="UPDATE ".$this->table_name." 
-        SET name=:name, description=:description, price=:price, category_id=:category_id 
+        SET title=:title, text=:text, topic_id=:topic_id, user_id=:user_id 
         WHERE id=:id";
 
         $stmt = $this->conn->prepare($query);
 
         $this->id=htmlspecialchars(strip_tags($this->id));
-        $this->name=htmlspecialchars(strip_tags($this->name));
-        $this->description=htmlspecialchars(strip_tags($this->description));
-        $this->price=htmlspecialchars(strip_tags($this->price));
-        $this->category_id=htmlspecialchars(strip_tags($this->category_id));
+        $this->title=htmlspecialchars(strip_tags($this->title));
+        $this->text=htmlspecialchars(strip_tags($this->text));
+        $this->topic_id=htmlspecialchars(strip_tags($this->topic_id));
+        $this->user_id=htmlspecialchars(strip_tags($this->user_id));
 
         $stmt->bindParam(":id", $this->id);
-        $stmt->bindParam(":name", $this->name);
-        $stmt->bindParam(":description", $this->description);
-        $stmt->bindParam(":price", $this->price);
-        $stmt->bindParam(":category_id", $this->category_id);
+        $stmt->bindParam(":title", $this->title);
+        $stmt->bindParam(":text", $this->text);
+        $stmt->bindParam(":topic_id", $this->topic_id);
+        $stmt->bindParam(":user_id", $this->user_id);
 
         if ($stmt->execute()) {
             return true; 
         } 
         return false;
     }
-    function searchPaging($keywords,$category,$price,$from_record_num,$records_per_page){
-        $category=htmlspecialchars(strip_tags($category));
-        $category=$category!=""?" and (c.id = ".$category.") ":"";
+    function searchPaging($attr_arr,$from_record_num,$records_per_page){
+        $attr_arr['topic']=htmlspecialchars(strip_tags($attr_arr['topic']));
+        $attr_arr['topic']=$attr_arr['topic']!=""?" and (t.id = ".$attr_arr['topic'].") ":"";
 
-        $price=htmlspecialchars(strip_tags($price));
-        $price=$price!=""?" and (p.price > ".explode("-", $price)[0]." and p.price < ".explode("-", $price)[1].") ":"";
+        $attr_arr['user_id']=htmlspecialchars(strip_tags($attr_arr['user_id']));
+        $attr_arr['user_id']=$attr_arr['user_id']!=""?" and (u.id = ".$attr_arr['user_id'].") ":"";
 
         $query="SELECT 
-        c.name as category_name, p.id, p.name, p.description, p.price, p.category_id, p.created
+        t.name as topic_name, u.firstname as user_firstname, u.lastname as user_lastname,
+        p.id, p.title,  p.text,  p.user_id,  p.topic_id,  p.created 
         FROM " . $this->table_name . " p 
-        LEFT JOIN
-        categories c 
-        ON p.category_id = c.id
-        WHERE (p.name LIKE ? or c.name LIKE ? or p.description LIKE ?) ".
-        $category.$price."
+        LEFT JOIN 
+        topics t 
+        ON p.topic_id=t.id
+        LEFT JOIN 
+        users u 
+        ON p.user_id=u.id
+        WHERE (p.title LIKE ? or p.text LIKE ? or t.name LIKE ?) ".
+        $attr_arr['topic'].$attr_arr['user_id']."
         ORDER BY
         p.created DESC 
         LIMIT ?, ?";
@@ -123,42 +137,45 @@ class Post{
 
         $from_record_num=htmlspecialchars(strip_tags($from_record_num));
         $records_per_page=htmlspecialchars(strip_tags($records_per_page));
-        $keywords=htmlspecialchars(strip_tags($keywords));
-        $keywords="%".$keywords."%";
+        $attr_arr['keywords']=htmlspecialchars(strip_tags($attr_arr['keywords']));
+        $attr_arr['keywords']="%".$attr_arr['keywords']."%";
 
-        $stmt->bindParam(1, $keywords);
-        $stmt->bindParam(2, $keywords);
-        $stmt->bindParam(3, $keywords);
+        $stmt->bindParam(1, $attr_arr['keywords']);
+        $stmt->bindParam(2, $attr_arr['keywords']);
+        $stmt->bindParam(3, $attr_arr['keywords']);
         $stmt->bindParam(4, $from_record_num, PDO::PARAM_INT);
         $stmt->bindParam(5, $records_per_page, PDO::PARAM_INT);
 
         $stmt->execute();
         return $stmt;
     }
-    function count($keywords,$category,$price){
-        $category=htmlspecialchars(strip_tags($category));
-        $category=$category!=""?" and (c.id = ".$category.") ":"";
+    function count($attr_arr){
+        $attr_arr['topic']=htmlspecialchars(strip_tags($attr_arr['topic']));
+        $attr_arr['topic']=$attr_arr['topic']!=""?" and (t.id = ".$attr_arr['topic'].") ":"";
 
-        $price=htmlspecialchars(strip_tags($price));
-        $price=$price!=""?" and (p.price > ".explode("-", $price)[0]." and p.price < ".explode("-", $price)[1].") ":"";
+        $attr_arr['user_id']=htmlspecialchars(strip_tags($attr_arr['user_id']));
+        $attr_arr['user_id']=$attr_arr['user_id']!=""?" and (u.id = ".$attr_arr['user_id'].") ":"";
 
         $query="SELECT 
         COUNT(*) as total_rows 
         FROM ".$this->table_name." p 
-        LEFT JOIN
-        categories c 
-        ON p.category_id = c.id
-        WHERE (p.name LIKE ? or c.name LIKE ? or p.description LIKE ?) ".
-        $category.$price;
+        LEFT JOIN 
+        topics t 
+        ON p.topic_id=t.id
+        LEFT JOIN 
+        users u 
+        ON p.user_id=u.id
+        WHERE (p.title LIKE ? or p.text LIKE ? or t.name LIKE ?) ".
+        $attr_arr['topic'].$attr_arr['user_id'];
 
         $stmt=$this->conn->prepare($query);
 
-        $keywords=htmlspecialchars(strip_tags($keywords));
-        $keywords="%".$keywords."%";
+        $attr_arr['keywords']=htmlspecialchars(strip_tags($attr_arr['keywords']));
+        $attr_arr['keywords']="%".$attr_arr['keywords']."%";
 
-        $stmt->bindParam(1, $keywords);
-        $stmt->bindParam(2, $keywords);
-        $stmt->bindParam(3, $keywords);
+        $stmt->bindParam(1, $attr_arr['keywords']);
+        $stmt->bindParam(2, $attr_arr['keywords']);
+        $stmt->bindParam(3, $attr_arr['keywords']);
 
         $stmt->execute();
 
